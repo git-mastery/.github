@@ -1,0 +1,12 @@
+name: Autograding
+on: [pull_request]
+jobs:
+  calling-autograding-workflow:
+    uses: git-mastery/actions/.github/workflows/grade.yml@main
+    secrets:
+      personal_access_token: ${{ secrets.ORG_PAT }}
+      is_local: ${{ env.ACT == 'TRUE' }}
+      pr_number: ${{ github.event.number }}
+      repository: ${{ github.repository }}
+
+
