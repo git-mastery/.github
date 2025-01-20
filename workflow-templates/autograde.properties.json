@@ -1,0 +1,4 @@
+{
+  "name": "Autograding template workflow (V1)",
+  "description": "Initialize the autograding workflow for exercise packets (without re-usable action)"
+}

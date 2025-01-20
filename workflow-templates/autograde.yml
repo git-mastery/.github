@@ -1,0 +1,46 @@
+name: Autograding
+
+on: pull_request_target
+
+jobs:
+  autograding:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Installing Python (only on act)
+        if: ${{ vars.IS_LOCAL == 'true' }}
+        run: | 
+          apt update
+          apt install -y python3 python3-pip git
+      - name: Set repository name
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+      - name: Checking out submission repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.actor }}/${{ env.REPO_NAME }}
+          token: ${{ secrets.ORG_PAT }}
+          path: main
+          fetch-depth: 0
+      - name: Checking out solutions repository
+        uses: actions/checkout@v4
+        with:
+          repository: git-mastery/solution-${{ env.REPO_NAME }}
+          token: ${{ secrets.ORG_PAT }}
+          path: solution/
+      - name: Setup Python (only on Github Actions)
+        if: ${{ vars.IS_LOCAL != 'true' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installing Python dependencies
+        run: |
+          pip install GitPython PyGithub
+      - name: Run Python
+        run: python3 grade.py
+        working-directory: solution
+        env:
+          base_repository: ${{ github.repository }}
+          is_local: ${{ vars.IS_LOCAL }}
+          repository_name: ${{ env.REPO_NAME }}
+                    
+
+
